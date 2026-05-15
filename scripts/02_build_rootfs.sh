@@ -56,6 +56,17 @@ cp -r /usr/lib/python3 "$INITRAMFS_DIR/usr/lib/" 2>/dev/null || \
   cp -r /usr/lib/python${PYTHON_VER} "$INITRAMFS_DIR/usr/lib/" 2>/dev/null || true
 ln -sf python3 "$INITRAMFS_DIR/usr/bin/python" 2>/dev/null || true
 
+# Copiar módulos del kernel si están instalados
+if [ -d "$WORKSPACE_ROOT/kernel/build/lib/modules" ]; then
+  rm -rf "$INITRAMFS_DIR/lib/modules"
+  mkdir -p "$INITRAMFS_DIR/lib/modules"
+  cp -a "$WORKSPACE_ROOT/kernel/build/lib/modules"/* "$INITRAMFS_DIR/lib/modules/" 2>/dev/null || true
+elif [ -d "$WORKSPACE_ROOT/kernel/linux/lib/modules" ]; then
+  rm -rf "$INITRAMFS_DIR/lib/modules"
+  mkdir -p "$INITRAMFS_DIR/lib/modules"
+  cp -a "$WORKSPACE_ROOT/kernel/linux/lib/modules"/* "$INITRAMFS_DIR/lib/modules/" 2>/dev/null || true
+fi
+
 # ── Usuario student (sin privilegios, como en el reto real) ───────────────────
 cat > "$INITRAMFS_DIR/etc/passwd" << 'EOF'
 root:x:0:0:root:/root:/bin/sh
@@ -78,10 +89,12 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export PS1='[\u@copy-fail \w]\$ '
 echo ""
 echo "  Bienvenido al kernel vulnerable (CVE-2026-31431)"
+echo "  Hostname: $(hostname)"
 echo "  Usuario: $(id)"
+echo "  whoami: $(whoami)"
 echo "  Kernel:  $(uname -r)"
 echo "  Módulos cargados con algif:"
-echo "  $(cat /proc/modules | grep alg || echo '  (ninguno detectado aún)')"
+echo "  $(cat /proc/modules | grep -i alg || echo '  (ninguno detectado aún)')"
 echo ""
 EOF
 
@@ -107,8 +120,8 @@ echo "[INIT] /proc/self/mounts:"
 cat /proc/self/mounts 2>&1 || true
 
 # Cargar módulos crypto necesarios para la vulnerabilidad
-modprobe algif_aead 2>/dev/null || true
-modprobe authencesn 2>/dev/null || true
+modprobe algif_aead 2>&1 || echo "[INIT] modprobe algif_aead failed"
+modprobe authencesn 2>&1 || echo "[INIT] modprobe authencesn failed"
 
 # Hostname identificador (para validación anti-copia)
 STUDENT_ID="${STUDENT_ID:-unknown}"

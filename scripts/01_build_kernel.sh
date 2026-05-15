@@ -57,9 +57,9 @@ scripts/config --enable INET
 # ── LA PIEZA CLAVE: API crypto expuesta a userspace ──────────────────────────
 scripts/config --enable CRYPTO
 scripts/config --enable CRYPTO_USER_API        # AF_ALG base
-scripts/config --enable CRYPTO_USER_API_AEAD   # algif_aead  ← VULNERABLE
+scripts/config --module CRYPTO_USER_API_AEAD   # algif_aead  ← VULNERABLE
 scripts/config --enable CRYPTO_USER_API_SKCIPHER
-scripts/config --enable CRYPTO_AUTHENCESN      # el template que escribe de más
+scripts/config --module CRYPTO_AUTHENC       # authencesn + authenc support
 scripts/config --enable CRYPTO_AES
 scripts/config --enable CRYPTO_CBC
 scripts/config --enable CRYPTO_HMAC
@@ -91,6 +91,13 @@ make -j"$JOBS" bzImage 2>&1 | tail -5
 END=$(date +%s)
 echo -e "  Tiempo de compilación: $((END - START)) segundos"
 
+echo ""
+echo -e "${CYAN}[5/5] Compilando e instalando módulos...${NC}"
+START=$(date +%s)
+make -j"$JOBS" modules_install INSTALL_MOD_PATH="$BUILD_DIR" 2>&1 | tail -5
+END=$(date +%s)
+echo -e "  Tiempo de compilación de módulos: $((END - START)) segundos"
+
 mkdir -p "$BUILD_DIR"
 cp arch/x86/boot/bzImage "$BUILD_DIR/bzImage_vuln"
 echo ""
@@ -98,8 +105,8 @@ echo -e "${GREEN}[5/5] ✓ Kernel vulnerable compilado → kernel/build/bzImage_
 echo ""
 
 # Verificar que algif_aead está habilitado en la config
-if grep -q "CONFIG_CRYPTO_USER_API_AEAD=y" .config; then
-  echo -e "${GREEN}  ✓ CONFIG_CRYPTO_USER_API_AEAD=y confirmado en .config${NC}"
+if grep -q "CONFIG_CRYPTO_USER_API_AEAD=[ym]" .config; then
+  echo -e "${GREEN}  ✓ CONFIG_CRYPTO_USER_API_AEAD habilitado en .config${NC}"
 else
   echo -e "${YELLOW}  ⚠ Verifica manualmente que CONFIG_CRYPTO_USER_API_AEAD esté habilitado${NC}"
 fi
