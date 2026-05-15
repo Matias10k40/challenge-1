@@ -88,10 +88,23 @@ EOF
 # ── Script init ────────────────────────────────────────────────────────────────
 cat > "$INITRAMFS_DIR/init" << 'INITEOF'
 #!/bin/sh
-mount -t proc none /proc
-mount -t sysfs none /sys
+mkdir -p /proc /sys /dev /tmp
+mount -t proc none /proc || echo "[INIT] ERROR: proc mount failed"
+mount -t sysfs none /sys || echo "[INIT] ERROR: sysfs mount failed"
 mount -t devtmpfs none /dev 2>/dev/null || mdev -s
-mount -t tmpfs none /tmp
+mount -t tmpfs none /tmp || echo "[INIT] ERROR: tmpfs mount failed"
+
+echo "[INIT] /proc mount status:"
+mount | grep ' on /proc ' || true
+
+echo "[INIT] /proc content sample:"
+ls /proc | head -20 || true
+
+echo "[INIT] /proc/modules content:"
+cat /proc/modules 2>&1 || true
+
+echo "[INIT] /proc/self/mounts:"
+cat /proc/self/mounts 2>&1 || true
 
 # Cargar módulos crypto necesarios para la vulnerabilidad
 modprobe algif_aead 2>/dev/null || true

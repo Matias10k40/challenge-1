@@ -64,6 +64,10 @@ scripts/config --enable CRYPTO_AES
 scripts/config --enable CRYPTO_CBC
 scripts/config --enable CRYPTO_HMAC
 scripts/config --enable CRYPTO_SHA256
+# Módulos y soporte para carga dinámica (necesario para algif_aead)
+scripts/config --enable MODULES
+scripts/config --enable MODULE_UNLOAD
+scripts/config --enable MODULE_FORCE_UNLOAD
 # Setuid binaries (necesario para la escalada de privilegios)
 scripts/config --enable MULTIUSER
 # Misc necesario
