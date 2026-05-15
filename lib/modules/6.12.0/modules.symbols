@@ -1,0 +1,4 @@
+# Aliases for symbols, used by symbol_request().
+alias symbol:crypto_get_default_null_skcipher crypto_null
+alias symbol:crypto_put_default_null_skcipher crypto_null
+alias symbol:crypto_authenc_extractkeys authenc

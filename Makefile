@@ -78,6 +78,10 @@ rootfs:
 qemu:
 	@STUDENT_ID="$(STUDENT_ID)" bash $(SCRIPTS_DIR)/03_run_qemu.sh
 
+# ── Ejecutar exploit Hito 2 ───────────────────────────────────────────────────
+exploit:
+	@STUDENT_ID="$(STUDENT_ID)" bash $(SCRIPTS_DIR)/05_run_exploit.sh
+
 # ── VM con kernel parcheado ───────────────────────────────────────────────────
 qemu-patched:
 	@if [ ! -f "$(BUILD_DIR)/bzImage_patched" ]; then \

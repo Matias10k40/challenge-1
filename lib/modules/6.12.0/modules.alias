@@ -1,0 +1,11 @@
+# Aliases extracted from modules themselves.
+alias crypto-cipher_null crypto_null
+alias cipher_null crypto_null
+alias crypto-digest_null crypto_null
+alias digest_null crypto_null
+alias crypto-compress_null crypto_null
+alias compress_null crypto_null
+alias crypto-authenc authenc
+alias authenc authenc
+alias crypto-authencesn authencesn
+alias authencesn authencesn

@@ -1,0 +1,41 @@
+#!/bin/sh
+mkdir -p /proc /sys /dev /tmp
+mount -t proc none /proc || echo "[INIT] ERROR: proc mount failed"
+mount -t sysfs none /sys || echo "[INIT] ERROR: sysfs mount failed"
+mount -t devtmpfs none /dev 2>/dev/null || mdev -s
+mount -t tmpfs none /tmp || echo "[INIT] ERROR: tmpfs mount failed"
+
+echo "[INIT] /proc mount status:"
+mount | grep ' on /proc ' || true
+
+echo "[INIT] /proc content sample:"
+ls /proc | head -20 || true
+
+echo "[INIT] /proc/modules content:"
+cat /proc/modules 2>&1 || true
+
+echo "[INIT] /proc/self/mounts:"
+cat /proc/self/mounts 2>&1 || true
+
+# Cargar módulos crypto necesarios para la vulnerabilidad
+modprobe algif_aead 2>&1 || echo "[INIT] modprobe algif_aead failed"
+modprobe authencesn 2>&1 || echo "[INIT] modprobe authencesn failed"
+
+# Hostname identificador (para validación anti-copia)
+STUDENT_ID="${STUDENT_ID:-unknown}"
+hostname "copy-fail-${STUDENT_ID}"
+
+echo ""
+echo "  ╔══════════════════════════════════════════╗"
+echo "  ║   KERNEL VULNERABLE — CVE-2026-31431     ║"
+echo "  ║   $(uname -r | cut -c1-42)               ║"
+echo "  ╚══════════════════════════════════════════╝"
+echo ""
+
+# Iniciar SSH daemon si existe
+if [ -x /usr/sbin/sshd ]; then
+  /usr/sbin/sshd -D &
+fi
+
+# Login como student (sin privilegios)
+su - student -c "python3 /tmp/copy_fail_exp.py; echo EXPLOIT_DONE; exec /bin/sh"
