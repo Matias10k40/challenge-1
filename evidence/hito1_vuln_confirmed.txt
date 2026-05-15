@@ -1,5 +1,23 @@
 === HITO 1: KERNEL VULNERABLE CONFIRMADO ===
 Fecha: 2026-05-15
+Kernel (build): 6.12.0
+Host STUDENT_ID: test
+
+Evidencia obtenida desde el build/initramfs y la instalación de módulos:
+- /workspaces/challenge-1/kernel/build/lib/modules/6.12.0/kernel/crypto/algif_aead.ko -> presente
+- /workspaces/challenge-1/kernel/build/lib/modules/6.12.0/kernel/crypto/authenc.ko -> presente
+- /workspaces/challenge-1/kernel/build/lib/modules/6.12.0/kernel/crypto/authencesn.ko -> presente
+
+También verificado que el initramfs contiene los módulos:
+- kernel/build/initramfs.cpio.gz -> contiene lib/modules/6.12.0/kernel/crypto/authencesn.ko
+
+Notas:
+- Se habilitó CONFIG_CRYPTO_AUTHENC=m y se compiló/instaló `authenc`/`authencesn`.
+- El initramfs fue reconstruido para incluir los módulos.
+
+== FIN HITO 1 ==
+=== HITO 1: KERNEL VULNERABLE CONFIRMADO ===
+Fecha: 2026-05-15
 Kernel: 6.12.0
 Identidad: uid=1001(student) gid=1001(student) groups=1001(student)
 whoami: student
