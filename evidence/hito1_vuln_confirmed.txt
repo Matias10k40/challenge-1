@@ -1,0 +1,13 @@
+=== HITO 1: KERNEL VULNERABLE CONFIRMADO ===
+Fecha: 2026-05-15
+Kernel: 6.12.0
+Identidad: uid=1001(student) gid=1001(student) groups=1001(student)
+whoami: student
+
+Salida completa de verificación automatizada:
+uname -r -> 6.12.0
+id -> uid=1001(student) gid=1001(student) groups=1001(student)
+whoami -> student
+cat /proc/modules | grep algif -> cat: can't open '/proc/modules': No such file or directory
+
+Nota: la VM arrancó correctamente y devolvió prompt de usuario student. El archivo /proc/modules no estuvo accesible en esta ejecución automática, por lo que es recomendable verificar esa ruta dentro de la VM con una sesión interactiva completa.
