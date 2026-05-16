@@ -24,6 +24,7 @@ fi
 cd "$BUSYBOX_SRC"
 echo -e "${CYAN}[2/6] Configurando BusyBox (binario estático)...${NC}"
 make defconfig
+make oldconfig < /dev/null
 # Compilación estática para no necesitar librerías externas
 
 sed -i 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config
@@ -38,7 +39,11 @@ mkdir -p "$INITRAMFS_DIR"
 make CONFIG_PREFIX="$INITRAMFS_DIR" install
 
 # ── Estructura mínima del sistema de archivos ──────────────────────────────────
-mkdir -p "$INITRAMFS_DIR"/{proc,sys,dev,tmp,etc,root,home/student,usr/bin,run}
+mkdir -p "$INITRAMFS_DIR"/{proc,sys,dev,tmp,etc,root,home,usr/bin,run}
+mkdir -p "$INITRAMFS_DIR/home/student"
+chmod 0755 "$INITRAMFS_DIR/home"
+chmod 0755 "$INITRAMFS_DIR/home/student"
+chown 1001:1001 "$INITRAMFS_DIR/home/student"
 
 # Python 3 del host → copiarlo al initramfs con sus dependencias
 echo -e "${CYAN}[5/6] Incluyendo Python 3 en el initramfs...${NC}"

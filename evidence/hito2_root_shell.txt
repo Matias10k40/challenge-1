@@ -1,0 +1,7 @@
+=== HITO 2: EXPLOIT AUTOMÁTICO ===
+Fecha: Sat May 16 02:04:38 UTC 2026
+STUDENT_ID: Matias-Quinteros
+Kernel: bzImage_vuln
+QEMU log: /tmp/qemu_hito2_serial.log
+
+--- Salida relevante ---

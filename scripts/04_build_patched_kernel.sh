@@ -66,14 +66,14 @@ echo -e "${CYAN}[3/4] Compilando kernel parcheado...${NC}"
 START=$(date +%s)
 make -j"$JOBS" bzImage 2>&1 | tail -5
 END=$(date +%s)
-echo -e "  Tiempo: $((END - START)) segundos"
+  echo -e "  Tiempo: $((END - START)) segundos"
 
 cp arch/x86/boot/bzImage "$BUILD_DIR/bzImage_patched"
 echo -e "${GREEN}  ✓ Kernel parcheado → kernel/build/bzImage_patched${NC}"
 
 echo ""
 echo -e "${CYAN}[4/4] Reconstruyendo initramfs con kernel parcheado...${NC}"
-cd /workspaces/copy-fail-challenge
+cd "$WORKSPACE_ROOT"
 BZIMAGE_BACKUP="$BUILD_DIR/bzImage_vuln"
 cp "$BUILD_DIR/bzImage_patched" "$BUILD_DIR/bzImage_vuln"
 bash scripts/02_build_rootfs.sh

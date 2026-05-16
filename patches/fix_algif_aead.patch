@@ -1,0 +1,12 @@
+diff --git a/kernel/linux/crypto/algif_aead.c b/kernel/linux/crypto/algif_aead.c
+--- a/kernel/linux/crypto/algif_aead.c
++++ b/kernel/linux/crypto/algif_aead.c
+@@
+-        /* Use the RX SGL as source (and destination) for crypto op. */
+-        rsgl_src = areq->first_rsgl.sgl.sgt.sgl;
++        /* Use the TX SGL as source and RX SGL as destination for crypto op. */
++        rsgl_src = areq->first_rsgl.sgl.sgt.sgl;
+@@
+-        aead_request_set_crypt(&areq->cra_u.aead_req, rsgl_src,
++        aead_request_set_crypt(&areq->cra_u.aead_req, tsgl_src,
+                                 areq->first_rsgl.sgl.sgt.sgl, used, ctx->iv);
