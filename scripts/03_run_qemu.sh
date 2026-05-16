@@ -10,7 +10,7 @@ INITRAMFS_DIR="$WORKSPACE_ROOT/kernel/initramfs"
 BUILD_DIR="$WORKSPACE_ROOT/kernel/build"
 
 
-BZIMAGE="$BUILD_DIR/bzImage_vuln"
+BZIMAGE="${BZIMAGE:-$BUILD_DIR/bzImage_vuln}"
 INITRAMFS="$BUILD_DIR/initramfs.cpio.gz"
 
 # ID del estudiante para el hostname de la VM (anti-copia)

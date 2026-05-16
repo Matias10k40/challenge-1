@@ -1,7 +1,56 @@
 === HITO 2: EXPLOIT AUTOMÁTICO ===
-Fecha: Sat May 16 02:04:38 UTC 2026
+Fecha: Sat May 16 15:30:15 UTC 2026
 STUDENT_ID: Matias-Quinteros
 Kernel: bzImage_vuln
-QEMU log: /tmp/qemu_hito2_serial.log
 
---- Salida relevante ---
+--- Salida del exploit y del sistema ---
+c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+
+
+iPXE (https://ipxe.org) 00:03.0 CA00 PCI2.10 PnP PMM+0EFCAE00+0EF0AE00 CA00
+Press Ctrl-B to configure iPXE (PCI 00:03.0)...                                                                               
+
+
+Booting from ROM...
+c[?7l[2J[INIT] /proc mount status:
+none on /proc type proc (rw,relatime)
+[INIT] /proc content sample:
+1
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+2
+27
+28
+3
+4
+5
+6
+7
+8
+[INIT] /proc/modules content:
+[INIT] /proc/self/mounts:
+rootfs / rootfs rw 0 0
+none /proc proc rw,relatime 0 0
+none /sys sysfs rw,relatime 0 0
+none /dev devtmpfs rw,relatime 0 0
+none /tmp tmpfs rw,relatime 0 0
+
+  ╔══════════════════════════════════════════╗
+  ║   KERNEL VULNERABLE — CVE-2026-31431     ║
+  ║   6.12.0               ║
+  ╚══════════════════════════════════════════╝
+
+su: can't change directory to '/home/student': Permission denied
+su: can't change directory to '/': Permission denied
+Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000100
+Kernel Offset: disabled
+---[ end Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000100 ]---
+qemu-system-x86_64: terminating on signal 15 from pid 8485 (timeout)

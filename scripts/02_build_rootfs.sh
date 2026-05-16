@@ -61,6 +61,13 @@ cp -r /usr/lib/python3 "$INITRAMFS_DIR/usr/lib/" 2>/dev/null || \
   cp -r /usr/lib/python${PYTHON_VER} "$INITRAMFS_DIR/usr/lib/" 2>/dev/null || true
 ln -sf python3 "$INITRAMFS_DIR/usr/bin/python" 2>/dev/null || true
 
+# Copiar PoC del exploit al initramfs para pruebas dentro de la VM
+if [ -f "$WORKSPACE_ROOT/copy_fail_exp.py" ]; then
+  mkdir -p "$INITRAMFS_DIR/tmp"
+  cp "$WORKSPACE_ROOT/copy_fail_exp.py" "$INITRAMFS_DIR/tmp/copy_fail_exp.py"
+  chmod +x "$INITRAMFS_DIR/tmp/copy_fail_exp.py"
+fi
+
 # Copiar módulos del kernel si están instalados
 if [ -d "$WORKSPACE_ROOT/kernel/build/lib/modules" ]; then
   rm -rf "$INITRAMFS_DIR/lib/modules"
@@ -145,7 +152,8 @@ if [ -x /usr/sbin/sshd ]; then
 fi
 
 # Login como student (sin privilegios)
-exec su - student
+# Use su without - to avoid BusyBox login shell home-directory issues.
+exec su student
 INITEOF
 
 chmod +x "$INITRAMFS_DIR/init"
