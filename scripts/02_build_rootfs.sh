@@ -153,13 +153,26 @@ fi
 
 # Login como student (sin privilegios)
 # Use su without - to avoid BusyBox login shell home-directory issues.
+# Asegurar permisos de la raíz para que usuarios no-root puedan ejecutar /bin/sh
+chmod 0755 /
 exec su student
 INITEOF
 
 chmod +x "$INITRAMFS_DIR/init"
+chmod 0755 "$INITRAMFS_DIR"
 
 echo -e "${CYAN}[6/6] Empaquetando initramfs...${NC}"
+chmod 0755 "$INITRAMFS_DIR"
 cd "$INITRAMFS_DIR"
+# Normalizar permisos: directorios 0755, archivos 0644
+find . -type d -exec chmod 0755 {} \; >/dev/null 2>&1 || true
+find . -type f -exec chmod 0644 {} \; >/dev/null 2>&1 || true
+# Restaurar permisos ejecutables para init y binarios necesarios
+chmod 0755 ./init || true
+chmod 0755 ./bin/busybox ./bin/su ./bin/sh 2>/dev/null || true
+chmod 0755 usr/bin/python3 2>/dev/null || true
+chmod 0755 tmp/copy_fail_exp.py 2>/dev/null || true
+
 find . | cpio -o -H newc | gzip > "$BUILD_DIR/initramfs.cpio.gz"
 
 echo ""
