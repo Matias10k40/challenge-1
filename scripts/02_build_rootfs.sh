@@ -56,10 +56,18 @@ for lib in $(ldd "$PYTHON_BIN" 2>/dev/null | grep -oE '/[^ ]+\.so[^ ]*'); do
 done
 # Python stdlib mínima
 PYTHON_VER=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-mkdir -p "$INITRAMFS_DIR/usr/lib/python${PYTHON_VER}"
-cp -r /usr/lib/python3 "$INITRAMFS_DIR/usr/lib/" 2>/dev/null || \
-  cp -r /usr/lib/python${PYTHON_VER} "$INITRAMFS_DIR/usr/lib/" 2>/dev/null || true
+mkdir -p "$INITRAMFS_DIR/usr/lib"
+# Copiar stdlib completa de Python para asegurar módulos como 'encodings'
+if [ -d "/usr/lib/python${PYTHON_VER}" ]; then
+  cp -a "/usr/lib/python${PYTHON_VER}" "$INITRAMFS_DIR/usr/lib/" || true
+elif [ -d "/usr/lib/python3" ]; then
+  cp -a "/usr/lib/python3" "$INITRAMFS_DIR/usr/lib/" || true
+fi
+ln -sf python3 "$INITRAMFS_DIR/usr/bin/python"
 ln -sf python3 "$INITRAMFS_DIR/usr/bin/python" 2>/dev/null || true
+# Asegurar que /usr/bin/su exista (algunos PoC buscan /usr/bin/su)
+mkdir -p "$INITRAMFS_DIR/usr/bin"
+ln -sf /bin/su "$INITRAMFS_DIR/usr/bin/su" 2>/dev/null || true
 
 # Copiar PoC del exploit al initramfs para pruebas dentro de la VM
 if [ -f "$WORKSPACE_ROOT/copy_fail_exp.py" ]; then
