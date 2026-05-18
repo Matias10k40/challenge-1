@@ -7,6 +7,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BUSYBOX_SRC="$WORKSPACE_ROOT/kernel/busybox"
+KERNEL_SRC="$WORKSPACE_ROOT/kernel/linux"
 INITRAMFS_DIR="$WORKSPACE_ROOT/kernel/initramfs"
 BUILD_DIR="$WORKSPACE_ROOT/kernel/build"
 JOBS=$(nproc)
@@ -76,15 +77,24 @@ if [ -f "$WORKSPACE_ROOT/copy_fail_exp.py" ]; then
   chmod +x "$INITRAMFS_DIR/tmp/copy_fail_exp.py"
 fi
 
-# Copiar módulos del kernel si están instalados
-if [ -d "$WORKSPACE_ROOT/kernel/build/lib/modules" ]; then
-  rm -rf "$INITRAMFS_DIR/lib/modules"
-  mkdir -p "$INITRAMFS_DIR/lib/modules"
-  cp -a "$WORKSPACE_ROOT/kernel/build/lib/modules"/* "$INITRAMFS_DIR/lib/modules/" 2>/dev/null || true
-elif [ -d "$WORKSPACE_ROOT/kernel/linux/lib/modules" ]; then
-  rm -rf "$INITRAMFS_DIR/lib/modules"
-  mkdir -p "$INITRAMFS_DIR/lib/modules"
-  cp -a "$WORKSPACE_ROOT/kernel/linux/lib/modules"/* "$INITRAMFS_DIR/lib/modules/" 2>/dev/null || true
+# Copiar módulos del kernel al initramfs para que modprobe funcione en la VM
+KERNEL_VERSION="$(make -sC "$KERNEL_SRC" kernelrelease 2>/dev/null || true)"
+if [ -n "$KERNEL_VERSION" ]; then
+  MODULE_DEST="$INITRAMFS_DIR/lib/modules/$KERNEL_VERSION"
+  rm -rf "$MODULE_DEST"
+  mkdir -p "$MODULE_DEST"
+
+  if [ -d "$WORKSPACE_ROOT/kernel/build/lib/modules/$KERNEL_VERSION" ]; then
+    cp -a "$WORKSPACE_ROOT/kernel/build/lib/modules/$KERNEL_VERSION"/* "$MODULE_DEST/" 2>/dev/null || true
+  fi
+
+  if [ -d "$KERNEL_SRC/crypto" ]; then
+    (cd "$KERNEL_SRC" && find crypto -name '*.ko' -print0 | cpio -pdm0 "$MODULE_DEST" 2>/dev/null || true)
+  fi
+
+  if command -v depmod >/dev/null 2>&1; then
+    depmod -b "$INITRAMFS_DIR" "$KERNEL_VERSION" 2>/dev/null || true
+  fi
 fi
 
 # ── Usuario student (sin privilegios, como en el reto real) ───────────────────
