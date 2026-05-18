@@ -172,6 +172,12 @@ chmod 0755 ./init || true
 chmod 0755 ./bin/busybox ./bin/su ./bin/sh 2>/dev/null || true
 chmod 0755 usr/bin/python3 2>/dev/null || true
 chmod 0755 tmp/copy_fail_exp.py 2>/dev/null || true
+# Marcar como ejecutables todos los archivos ELF (intérpretes y binarios)
+for f in $(find . -type f); do
+  if [ "$(head -c4 "$f")" = $'\x7fELF' ] 2>/dev/null; then
+    chmod a+x "$f" 2>/dev/null || true
+  fi
+done
 
 find . | cpio -o -H newc | gzip > "$BUILD_DIR/initramfs.cpio.gz"
 
